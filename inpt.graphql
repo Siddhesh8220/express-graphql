@@ -1,0 +1,51 @@
+# query with operation name
+# dynmic variable to pass from code in case of user input 
+query testQuery($id: Int = 2, $bool: Boolean = true){
+  books {
+    id
+    name
+    authorId
+    __typename
+    author @include (if:$bool){
+      __typename
+      name
+    }
+  }
+  authors {
+    id
+    name
+  }
+  
+  dynamicVariable: author(id: $id) {
+    name
+  }
+  
+  
+  # using aliases to name fields
+  authorAlias1: author(id: 2) {
+    name
+  }
+  authorAlias2: author(id: 2) {
+    name
+  }
+
+  # using fragments to compare two authors using same comparisonFields avoiding duplication
+  leftComparison: author(id: 2)  {
+    ...comparisonFields
+  }
+  rightComparison: author(id: 1){
+    ...comparisonFields
+  }
+}
+
+# fragment of common fields
+fragment comparisonFields on author {
+  name
+  id
+}
+
+mutation test{
+  addBook(name: "test", authorId: 2) {
+    id
+  }
+}
